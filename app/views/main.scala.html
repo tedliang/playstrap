@@ -28,7 +28,7 @@
 	          <div class="nav-collapse collapse">
 	            @menu()
 	            <form class="navbar-form pull-right">
-	              <input class="span2" type="text" placeholder="Email">
+	              <input class="span2" type="text" placeholder="Username/Email">
 	              <input class="span2" type="password" placeholder="Password">
 	              <button type="submit" class="btn">Sign in</button>
 	            </form>
@@ -47,14 +47,15 @@
         
       <div id="footer">
    		<div class="container">
-      		<p class="muted credit">&copy; Company 2013</p>
+      		<p class="muted pager">&copy; Company 2013</p>
       	</div>
 	  </div>
         
       <script>
         var dojoConfig = {
             async: true,
-            parseOnLoad: false, //deps: ["dojo/parser"],
+            parseOnLoad: false, //if ture: add parser in deps
+            deps: ["bootstrap/Collapse"],
             aliases: [["parser", "dojo/parser"],
                       ["$", "dojo/query"],
                       ["ready", "dojo/domReady"]],
