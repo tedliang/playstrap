@@ -1,17 +1,19 @@
 @(title: String, scripts: Html = Html(""))(content: Html)
 
+@import views.helper.asset
+
 <!DOCTYPE html>
 
 <html>
     <head>
         <title>@title</title>
-        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+        <link rel="shortcut icon" type="image/png" href="@asset("images/favicon.png")">
         
-		<link rel='stylesheet' href='@routes.WebJarAssets.at(WebJarAssets.locate("bootstrap/2.3.1/css/bootstrap.min.css"))'>
-		<link rel='stylesheet' href='@routes.WebJarAssets.at(WebJarAssets.locate("bootstrap/2.3.1/css/bootstrap-responsive.min.css"))'>
-		<link rel='stylesheet' href='@routes.WebJarAssets.at(WebJarAssets.locate("dojo/1.8.1/dijit/themes/claro/claro.css"))'>
+		<link rel='stylesheet' href='@asset.bootstrap("css/bootstrap.min.css")'>
+		<link rel='stylesheet' href='@asset.bootstrap("css/bootstrap-responsive.min.css")'>
+		<link rel='stylesheet' href='@asset.dojo("dijit/themes/claro/claro.css")'>
 		
-        <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
+        <link rel="stylesheet" media="screen" href="@asset("stylesheets/main.css")">
     </head>
     <body class="claro">
     
@@ -55,16 +57,17 @@
         var dojoConfig = {
             async: true,
             parseOnLoad: false, //if ture: add parser in deps
-            deps: ["bootstrap/Collapse"],
+            deps: ["bootstrap/Collapse",
+            	   "bootstrap/Dropdown"],
             aliases: [["parser", "dojo/parser"],
                       ["$", "dojo/query"],
                       ["ready", "dojo/domReady"]],
             packages: [
-                { name: "bootstrap", location: '../../../dojo-bootstrap/1.3' }
+                { name: "bootstrap", location: '../../../@asset.dojostrap' }
             ]
         };
 	  </script>
-      <script type="text/javascript" src='@routes.WebJarAssets.at(WebJarAssets.locate("dojo/1.8.1/dojo/dojo.js"))'></script>
+      <script type="text/javascript" src='@asset.dojo("dojo/dojo.js")'></script>
 	  @scripts
     </body>
 </html>

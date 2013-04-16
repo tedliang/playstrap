@@ -1,10 +1,6 @@
 @(message: String)
 
-@scripts={
-	<script type="text/javascript" src='@routes.Assets.at("javascripts/index.js")'></script>
-}
-
-@main("Welcome to Dojo Bootstrap Application", scripts) {
+@main("Welcome to Dojo Bootstrap Application", helper.script("index")) {
 
   <div class="hero-unit">
     <h1>Hello, world!</h1>
