@@ -4,13 +4,13 @@ import controllers.routes
 
 object asset {
 
-  val dojo = module("dojo", "1.8.1")
-  val bootstrap = module("bootstrap", "2.3.1")
-  val dojostrap = module("dojo-bootstrap", "1.3")
+  val dojo = WebJarAsset("dojo", "1.8.1")
+  val bootstrap = WebJarAsset("bootstrap", "2.3.1")
+  val dojostrap = WebJarAsset("dojo-bootstrap", "1.3")
 
   def apply(file: String) = routes.Assets.at(file)
 
-  case class module(name: String, version: String) {
+  case class WebJarAsset(name: String, version: String) {
 
     override def toString = s"$name/$version"
 
