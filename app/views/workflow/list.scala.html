@@ -1,6 +1,4 @@
-@(currentPage: Page[(org.activiti.engine.repository.ProcessDefinition, org.activiti.engine.repository.Deployment)], pagination: views.helper.Pagination)
-@import views.helper.Pagination
-
+@(items: Seq[(org.activiti.engine.repository.ProcessDefinition, org.activiti.engine.repository.Deployment)], pagination: views.helper.Pagination)
 
 @main("workflow list") {
     
@@ -15,16 +13,26 @@
         
     </div>
     
-    @Option(currentPage.items).filterNot(_.isEmpty).map { entities =>
+    @Option(items).filterNot(_.isEmpty).map { entities =>
         
         <table class="table table-striped table-hover table-bordered">
            <thead>
              <tr>
-               @pagination.header(1, "ID")
-               @pagination.header(2, "Name")
-               @pagination.header(3, "Key")
-               @pagination.header(4, "Description")
-               @pagination.header(5, "Deployment Time")
+               <th class="col1 header @pagination.sortClass(1)">
+    		     <a href="@pagination.sortLink(1)">ID</a>
+			   </th>
+               <th class="col2 header @pagination.sortClass(2)">
+    		     <a href="@pagination.sortLink(2)">Name</a>
+			   </th>
+               <th class="col3 header @pagination.sortClass(3)">
+    		     <a href="@pagination.sortLink(3)">Key</a>
+			   </th>
+               <th class="col4 header">
+                 Description
+               </th>
+               <th class="col5 header @pagination.sortClass(4)">
+    		     <a href="@pagination.sortLink(4)">Deployment Time</a>
+			   </th>
              </tr>
            </thead>
            <tbody>
@@ -44,9 +52,9 @@
 
         <div class="pagination pagination-centered">
             <ul>
-                @currentPage.prev.map { page =>
+                @pagination.prev.map { page =>
                     <li class="previous">
-                        <a href="@pagination.link(page)">&larr; Previous</a>
+                        <a href="@pagination.pageLink(page)">&larr; Previous</a>
                     </li> 
                 }.getOrElse {
                     <li class="previous disabled">
@@ -54,11 +62,11 @@
                     </li>
                 }
                 <li class="current">
-                    <a>Displaying @(currentPage.offset + 1) to @(currentPage.offset + entities.size) of @currentPage.total</a>
+                    <a>Displaying @pagination.from to @pagination.to of @pagination.total</a>
                 </li>
-                @currentPage.next.map { page =>
+                @pagination.next.map { page =>
                     <li class="next">
-                        <a href="@pagination.link(page)">Next &rarr;</a>
+                        <a href="@pagination.pageLink(page)">Next &rarr;</a>
                     </li> 
                 }.getOrElse {
                     <li class="next disabled">

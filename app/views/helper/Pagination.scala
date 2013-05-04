@@ -1,25 +1,30 @@
 package views.helper
 
-import controllers.routes
-import play.api.mvc.Call
-import scala.xml.NodeSeq
+abstract class Pagination(page: Int, pageSize: Long, _filter: String, _orderBy: Int, rows: Int, _total: Long) {
 
-case class Pagination(t: (Int,Int,String) => Call, filter: String, currentOrderBy: Int) {
+  def link(newPage: Int, newOrderBy: Int): play.api.mvc.Call
 
-  def link(p: Int, newOrderBy: Option[Int] = None) = t(p,newOrderBy.map { orderBy =>
-        if(orderBy == scala.math.abs(currentOrderBy)) -currentOrderBy else orderBy
-    }.getOrElse(currentOrderBy), filter)
-    
-  def header(orderBy: Int, title: String) = {
-    <th class={s"col$orderBy header ${sortClass(orderBy)}"}>
-    <a href={link(0, Some(orderBy)).toString}>{title}</a>
-	</th>
-  }
+  def pageLink(newPage: Int) = link(newPage, _orderBy)
   
-  def sortClass(orderBy: Int) = 
-    if(scala.math.abs(currentOrderBy) == orderBy) 
-      if(currentOrderBy < 0) "headerSortDown" 
-      else "headerSortUp" 
+  def sortLink(newOrderBy: Int) = link(0, 
+      if(newOrderBy == scala.math.abs(orderBy)) -_orderBy 
+      else newOrderBy)
+  
+  def sortClass(newOrderBy: Int, upClass: String = "headerSortUp", downClass: String = "headerSortDown") = 
+    if(scala.math.abs(_orderBy) == newOrderBy) 
+      if(_orderBy < 0) downClass else upClass
     else ""
   
+  lazy val filter = _filter
+  lazy val orderBy = _orderBy
+  
+  lazy val total = _total
+  lazy val offset = pageSize*page
+  
+  lazy val from = offset+1
+  lazy val to = offset+rows
+  
+  lazy val prev = Option(page - 1).filter(_ >= 0)
+  lazy val next = Option(page + 1).filter(_ => (offset + rows) < _total)
+
 }

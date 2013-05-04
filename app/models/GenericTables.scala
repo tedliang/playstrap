@@ -4,11 +4,6 @@ import play.api.Play.current
 import play.api.db.slick.Config.driver.simple._
 import play.api.db.slick.DB
 
-case class Page[A](items: Seq[A], page: Int, offset: Long, total: Long) {
-  lazy val prev = Option(page - 1).filter(_ >= 0)
-  lazy val next = Option(page + 1).filter(_ => (offset + items.size) < total)
-}
-
 abstract class IdTable[T](_schemaName: Option[String], _tableName: String) extends Table[T](_schemaName, _tableName) {
   def this(_tableName: String) = this(None, _tableName)
   def id = column[Long]("id", O.PrimaryKey, O.AutoInc)

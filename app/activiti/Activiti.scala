@@ -5,7 +5,6 @@ import scala.collection.JavaConversions._
 import org.activiti.engine.repository.Deployment
 import org.activiti.engine.repository.ProcessDefinition
 import org.activiti.engine.repository.ProcessDefinitionQuery
-import models.Page
 
 /**
  * Public Activiti API
@@ -26,14 +25,20 @@ object Activiti {
   def formService = engine.getFormService
   
   def processList(page: Int, pageSize: Int, filter: String, orderBy: Int) = {
-    val proDefquery = repositoryService.createProcessDefinitionQuery().processDefinitionNameLike(s"%$filter%").orderByDeploymentId().desc();
+    val proDefquery = repositoryService.createProcessDefinitionQuery().processDefinitionNameLike(s"%$filter%");
+
+    scala.math.abs(orderBy) match {
+      case 2 => proDefquery.orderByProcessDefinitionName()
+      case 3 => proDefquery.orderByProcessDefinitionKey()
+      case 4 => proDefquery.orderByDeploymentId()
+      case _ => proDefquery.orderByProcessDefinitionId()
+    }
+    if(orderBy<0) proDefquery.desc() else proDefquery.asc()
+    
     val deployQuery = repositoryService.createDeploymentQuery
-    Page(proDefquery.listPage(pageSize*page, pageSize) map { proDef => 
-        (proDef, deployQuery.deploymentId(proDef.getDeploymentId).singleResult())
-      }, 
-      page, 
-      offset = pageSize * page, 
-      proDefquery.count)
+    (for(proDef <- proDefquery.listPage(pageSize*page, pageSize)) 
+      yield(proDef, deployQuery.deploymentId(proDef.getDeploymentId).singleResult()),
+      proDefquery.count) 
   } 
   
 }
