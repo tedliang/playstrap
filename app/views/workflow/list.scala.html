@@ -13,7 +13,7 @@
         
     </div>
     
-    @Option(items).filterNot(_.isEmpty).map { entities =>
+    @Option(items).filter(_.nonEmpty).map { entities =>
         
         <table class="table table-striped table-hover table-bordered">
            <thead>
