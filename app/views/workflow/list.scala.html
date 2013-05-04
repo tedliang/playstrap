@@ -54,11 +54,17 @@
             <ul>
                 @if(page.hasPrev){
                     <li class="previous">
-                        <a href="@page.prevLink">&larr; Previous</a>
+                        <a href="@page.firstLink">«</a>
+                    </li> 
+                    <li class="previous">
+                        <a href="@page.prevLink">‹</a>
                     </li> 
                 } else {
                     <li class="previous disabled">
-                        <a>&larr; Previous</a>
+                        <a>«</a>
+                    </li>
+                    <li class="previous disabled">
+                        <a>‹</a>
                     </li>
                 }
                 <li class="current">
@@ -66,11 +72,17 @@
                 </li>
                 @if(page.hasNext){
                     <li class="next">
-                        <a href="@page.nextLink">Next &rarr;</a>
+                        <a href="@page.nextLink">›</a>
+                    </li> 
+                    <li class="next">
+                        <a href="@page.lastLink">»</a>
                     </li> 
                 } else {
                     <li class="next disabled">
-                        <a>Next &rarr;</a>
+                        <a>›</a>
+                    </li>
+                    <li class="next disabled">
+                        <a>»</a>
                     </li>
                 }
             </ul>

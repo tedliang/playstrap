@@ -34,4 +34,9 @@ abstract class Page[C](number: Int, pageSize: Long, _filter: String, _orderBy: I
   lazy val prevLink = pageLink(prev)
   lazy val nextLink = pageLink(next)
   
+  lazy val first = 0
+  lazy val last = (_total/pageSize-1).toInt
+  lazy val firstLink = pageLink(first)
+  lazy val lastLink = pageLink(last)
+  
 }
