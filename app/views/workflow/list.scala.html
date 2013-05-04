@@ -1,4 +1,4 @@
-@(items: Seq[(org.activiti.engine.repository.ProcessDefinition, org.activiti.engine.repository.Deployment)], pagination: views.helper.Pagination)
+@(page: views.helper.Page[(org.activiti.engine.repository.ProcessDefinition, org.activiti.engine.repository.Deployment)])
 
 @main("workflow list") {
     
@@ -7,36 +7,36 @@
     <div>
         
         @helper.form(action=routes.Workflow.list()) {
-            <input type="search" name="f" value="@pagination.filter" placeholder="Filter by name..." class="input-large search-query">
+            <input type="search" name="f" value="@page.filter" placeholder="Filter by name..." class="input-large search-query">
             <input type="submit" value="Filter by name" class="btn btn-primary">
         }
         
     </div>
     
-    @Option(items).filter(_.nonEmpty).map { entities =>
+    @if(page.hasContent){
         
         <table class="table table-striped table-hover table-bordered">
            <thead>
              <tr>
-               <th class="col1 header @pagination.sortClass(1)">
-    		     <a href="@pagination.sortLink(1)">ID</a>
+               <th class="col1 header @page.sortClass(1)">
+    		     <a href="@page.sortLink(1)">ID</a>
 			   </th>
-               <th class="col2 header @pagination.sortClass(2)">
-    		     <a href="@pagination.sortLink(2)">Name</a>
+               <th class="col2 header @page.sortClass(2)">
+    		     <a href="@page.sortLink(2)">Name</a>
 			   </th>
-               <th class="col3 header @pagination.sortClass(3)">
-    		     <a href="@pagination.sortLink(3)">Key</a>
+               <th class="col3 header @page.sortClass(3)">
+    		     <a href="@page.sortLink(3)">Key</a>
 			   </th>
                <th class="col4 header">
                  Description
                </th>
-               <th class="col5 header @pagination.sortClass(4)">
-    		     <a href="@pagination.sortLink(4)">Deployment Time</a>
+               <th class="col5 header @page.sortClass(4)">
+    		     <a href="@page.sortLink(4)">Deployment Time</a>
 			   </th>
              </tr>
            </thead>
            <tbody>
-             @entities.map { 
+             @page.content.map { 
                case (proDef, deploy) => {
                  <tr>
                    <td><a href="">@proDef.getId</a></td>
@@ -52,23 +52,23 @@
 
         <div class="pagination pagination-centered">
             <ul>
-                @pagination.prev.map { page =>
+                @if(page.hasPrev){
                     <li class="previous">
-                        <a href="@pagination.pageLink(page)">&larr; Previous</a>
+                        <a href="@page.prevLink">&larr; Previous</a>
                     </li> 
-                }.getOrElse {
+                } else {
                     <li class="previous disabled">
                         <a>&larr; Previous</a>
                     </li>
                 }
                 <li class="current">
-                    <a>Displaying @pagination.from to @pagination.to of @pagination.total</a>
+                    <a>Displaying @page.from to @page.to of @page.total</a>
                 </li>
-                @pagination.next.map { page =>
+                @if(page.hasNext){
                     <li class="next">
-                        <a href="@pagination.pageLink(page)">Next &rarr;</a>
+                        <a href="@page.nextLink">Next &rarr;</a>
                     </li> 
-                }.getOrElse {
+                } else {
                     <li class="next disabled">
                         <a>Next &rarr;</a>
                     </li>
@@ -76,7 +76,7 @@
             </ul>
         </div>
         
-    }.getOrElse {
+    } else {
         
         <div class="well">
             <em>Nothing to display</em>
