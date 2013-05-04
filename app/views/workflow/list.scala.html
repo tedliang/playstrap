@@ -1,0 +1,79 @@
+@(currentPage: Page[(org.activiti.engine.repository.ProcessDefinition, org.activiti.engine.repository.Deployment)], pagination: views.helper.Pagination)
+@import views.helper.Pagination
+
+
+@main("workflow list") {
+    
+    <h1>@Messages("workflow.list.title")</h1>
+
+    <div>
+        
+        @helper.form(action=routes.Workflow.list()) {
+            <input type="search" name="f" value="@pagination.filter" placeholder="Filter by name..." class="input-large search-query">
+            <input type="submit" value="Filter by name" class="btn btn-primary">
+        }
+        
+    </div>
+    
+    @Option(currentPage.items).filterNot(_.isEmpty).map { entities =>
+        
+        <table class="table table-striped table-hover table-bordered">
+           <thead>
+             <tr>
+               @pagination.header(1, "ID")
+               @pagination.header(2, "Name")
+               @pagination.header(3, "Key")
+               @pagination.header(4, "Description")
+               @pagination.header(5, "Deployment Time")
+             </tr>
+           </thead>
+           <tbody>
+             @entities.map { 
+               case (proDef, deploy) => {
+                 <tr>
+                   <td><a href="">@proDef.getId</a></td>
+                   <td>@proDef.getName</td>
+                   <td>@proDef.getKey</td>
+                   <td>@proDef.getDescription</td>
+                   <td>@deploy.getDeploymentTime</td>          
+                 </tr>
+               }
+             }
+           </tbody>
+        </table>
+
+        <div class="pagination pagination-centered">
+            <ul>
+                @currentPage.prev.map { page =>
+                    <li class="previous">
+                        <a href="@pagination.link(page)">&larr; Previous</a>
+                    </li> 
+                }.getOrElse {
+                    <li class="previous disabled">
+                        <a>&larr; Previous</a>
+                    </li>
+                }
+                <li class="current">
+                    <a>Displaying @(currentPage.offset + 1) to @(currentPage.offset + entities.size) of @currentPage.total</a>
+                </li>
+                @currentPage.next.map { page =>
+                    <li class="next">
+                        <a href="@pagination.link(page)">Next &rarr;</a>
+                    </li> 
+                }.getOrElse {
+                    <li class="next disabled">
+                        <a>Next &rarr;</a>
+                    </li>
+                }
+            </ul>
+        </div>
+        
+    }.getOrElse {
+        
+        <div class="well">
+            <em>Nothing to display</em>
+        </div>
+        
+    }   
+
+}
