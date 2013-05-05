@@ -1,16 +1,26 @@
-@(page: models.Page[(org.activiti.engine.repository.ProcessDefinition, org.activiti.engine.repository.Deployment)], filter: String)
+@(page: models.Page[(org.activiti.engine.repository.ProcessDefinition, org.activiti.engine.repository.Deployment), models.Searchable])
 
 @main("workflow list") {
     
     <h1>@Messages("workflow.list.title")</h1>
 
-    <div>
+	<div class="row-fluid">
+    <div class="span10">
         
         @helper.form(action=routes.Workflow.list()) {
-            <input type="search" name="f" value="@filter" placeholder="Filter by name..." class="input-large search-query">
+            <input type="search" name="f" value="@page.criteria.filter" placeholder="Filter by name..." class="input-large search-query">
             <input type="submit" value="Search" class="btn btn-primary">
         }
         
+    </div>
+    <div class="span2">
+    Page size:
+		<select class="span4" onchange="window.location.href=this.options[this.selectedIndex].value">
+			<option value="@page.sizeLink(5)" @if(page.size==5){selected}>5</option>
+			<option value="@page.sizeLink(10)" @if(page.size==10){selected}>10</option>
+			<option value="@page.sizeLink(20)" @if(page.size==20){selected}>20</option>
+		</select>    
+    </div>
     </div>
     
     @if(page.hasContent){

@@ -1,48 +1,52 @@
 package models
 
-case class Pageable(pageNum: Int, pageSize: Int,  order: Int) {
-  lazy val offset = pageSize*pageNum
+class Pageable(val pageNum: Int, val pageSize: Int, val order: Int) {
+  def offset = pageSize*pageNum
 }
 
-case class Page[C](pageable: Pageable, content: Seq[C], total: Long) {
+class Searchable(pageNum: Int, pageSize: Int, order: Int, val filter: String) 
+	extends Pageable(pageNum, pageSize, order) 
+
+class Page[C, P <:Pageable](val criteria: P, val content: Seq[C], val total: Long) {
 
   var link = (newPageNum: Int, newPageSize: Int, newOrder: Int) => ""
 
-  def autoLink(newLink: (Int, Int, Int)=>String):Page[C] = {
+  def enableLink(newLink: (Int, Int, Int) => String) = {
       link = newLink
       this
     }
       
-  def pageLink(newPage: Int) = link(newPage, pageable.pageSize, pageable.order)
+  def pageLink(newPage: Int) = link(newPage, criteria.pageSize, criteria.order)
+  def sizeLink(newPageSize: Int) = link(0, newPageSize, criteria.order)
   
-  def sortLink(newOrderBy: Int) = link(0, pageable.pageSize, 
-      if(newOrderBy == scala.math.abs(pageable.order)) -pageable.order 
+  def sortLink(newOrderBy: Int) = link(0, criteria.pageSize, 
+      if(newOrderBy == scala.math.abs(criteria.order)) -criteria.order 
       else newOrderBy)
   
   def sortClass(newOrderBy: Int, upClass: String = "headerSortUp", downClass: String = "headerSortDown") = 
-    if(scala.math.abs(pageable.order) == newOrderBy) 
-      if(pageable.order < 0) downClass else upClass
+    if(scala.math.abs(criteria.order) == newOrderBy) 
+      if(criteria.order < 0) downClass else upClass
     else ""
 
-  lazy val hasContent = content.nonEmpty
+  def hasContent = content.nonEmpty
   
-  lazy val offset = pageable.offset
-  lazy val number = pageable.pageNum
-  lazy val size = pageable.pageSize
+  def offset = criteria.offset
+  def number = criteria.pageNum
+  def size = criteria.pageSize
   
-  lazy val from = offset+1
-  lazy val to = offset+content.length
+  def from = offset+1
+  def to = offset+content.length
   
-  lazy val hasPrev = prev >= 0
-  lazy val hasNext = total > to
-  lazy val prev = number - 1
-  lazy val next = number + 1
-  lazy val prevLink = pageLink(prev)
-  lazy val nextLink = pageLink(next)
+  def hasPrev = prev >= 0
+  def hasNext = total > to
+  def prev = number - 1
+  def next = number + 1
+  def prevLink = pageLink(prev)
+  def nextLink = pageLink(next)
   
-  lazy val first = 0
-  lazy val last = (total/size-(if(total%size==0) 1 else 0)).toInt
-  lazy val firstLink = pageLink(first)
-  lazy val lastLink = pageLink(last)
+  def first = 0
+  def last = (total/size-(if(total%size==0) 1 else 0)).toInt
+  def firstLink = pageLink(first)
+  def lastLink = pageLink(last)
   
 }
