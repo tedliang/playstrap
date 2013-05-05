@@ -5,7 +5,7 @@ import scala.collection.JavaConversions._
 import org.activiti.engine.repository.Deployment
 import org.activiti.engine.repository.ProcessDefinition
 import org.activiti.engine.repository.ProcessDefinitionQuery
-import models.{Pageable, Page}
+import models.{Searchable, Page}
 
 /**
  * Public Activiti API
@@ -25,19 +25,20 @@ object Activiti {
   def historyService = engine.getHistoryService
   def formService = engine.getFormService
   
-  def processList(pageable: Pageable, filter: String) = {
-    val proDefquery = repositoryService.createProcessDefinitionQuery().processDefinitionNameLike(s"%$filter%");
+  def processList(criteria: Searchable) = {
+    val proDefquery = repositoryService.createProcessDefinitionQuery().processDefinitionNameLike(s"%${criteria.filter}%");
 
-    scala.math.abs(pageable.order) match {
+    scala.math.abs(criteria.order) match {
       case 2 => proDefquery.orderByProcessDefinitionName()
       case 3 => proDefquery.orderByProcessDefinitionKey()
       case 4 => proDefquery.orderByDeploymentId()
       case _ => proDefquery.orderByProcessDefinitionId()
     }
-    if(pageable.order<0) proDefquery.desc() else proDefquery.asc()
+    if(criteria.order<0) proDefquery.desc() else proDefquery.asc()
     
     val deployQuery = repositoryService.createDeploymentQuery
-    Page(pageable, for(proDef <- proDefquery.listPage(pageable.offset, pageable.pageSize)) 
+    
+    new Page(criteria, for(proDef <- proDefquery.listPage(criteria.offset, criteria.pageSize)) 
       yield(proDef, deployQuery.deploymentId(proDef.getDeploymentId).singleResult()), 
       proDefquery.count)
   } 
