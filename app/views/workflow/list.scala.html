@@ -1,4 +1,4 @@
-@(page: views.helper.Page[(org.activiti.engine.repository.ProcessDefinition, org.activiti.engine.repository.Deployment)])
+@(page: models.Page[(org.activiti.engine.repository.ProcessDefinition, org.activiti.engine.repository.Deployment)], filter: String)
 
 @main("workflow list") {
     
@@ -7,8 +7,8 @@
     <div>
         
         @helper.form(action=routes.Workflow.list()) {
-            <input type="search" name="f" value="@page.filter" placeholder="Filter by name..." class="input-large search-query">
-            <input type="submit" value="Filter by name" class="btn btn-primary">
+            <input type="search" name="f" value="@filter" placeholder="Filter by name..." class="input-large search-query">
+            <input type="submit" value="Search" class="btn btn-primary">
         }
         
     </div>

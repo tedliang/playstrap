@@ -5,19 +5,17 @@ import play.api.mvc._
 import play.api.Play.current
 import activiti.Activiti
 import views.html._
-import views.helper.Page
+import models.{Pageable, Page}
 
 object Workflow extends Controller {
 
   val pageSize = 2
 
-  def list(pageNum: Int, orderBy: Int, filter: String = "%") = Action {
-	val (items, total) = Activiti.processList(pageNum, pageSize, filter, orderBy); 
-    Ok(workflow.list(
-      new Page(pageNum, pageSize, filter, orderBy, items, total){
-        override def link(newPage: Int, newOrderBy: Int) = 
-          routes.Workflow.list(newPage, newOrderBy, filter)
-      }))
+  def list(pageNum: Int, orderBy: Int, filter: String = "") = Action {
+	Ok(workflow.list(Activiti.processList(Pageable(pageNum, pageSize, orderBy), filter).autoLink(
+	    (newPageNum: Int, newPageSize: Int, newOrderBy: Int) => 
+          routes.Workflow.list(newPageNum, newOrderBy, filter).toString
+	), filter))
   }
   
 }
