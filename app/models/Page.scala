@@ -11,7 +11,7 @@ class Page[P <:Pageable, C](val criteria: P, val content: Seq[C], val total: Lon
 
   var link = (newPageNum: Int, newPageSize: Int, newOrder: Int) => ""
 
-  def enableLink(newLink: (Int, Int, Int) => String) = {
+  def withLink(newLink: (Int, Int, Int) => String) = {
       link = newLink
       this
     }
@@ -48,5 +48,16 @@ class Page[P <:Pageable, C](val criteria: P, val content: Seq[C], val total: Lon
   def last = (total/size-(if(total%size==0) 1 else 0)).toInt
   def firstLink = pageLink(first)
   def lastLink = pageLink(last)
+  
+  def bound(range: Int = 5) = {
+    val low = number - range
+    val high = number + range
+    val lenght = range * 2
+    
+    if(lenght > last) first to last
+    else if(first > low) first to lenght
+    else if(high > last) last-lenght to last
+    else low to high
+  }
   
 }

@@ -8,16 +8,17 @@
     <div class="span10">
         
         @helper.form(action=routes.Workflow.list()) {
-            <input type="search" name="f" value="@page.criteria.filter" placeholder="Filter by name..." class="input-large search-query">
-            <input type="submit" value="Search" class="btn btn-primary">
+      	  <div class="input-append">
+		    <input type="text" class="span10" name="f" value="@page.criteria.filter">
+		    <button type="submit" class="btn">Filter by name</button>
+		  </div>
         }
         
     </div>
     <div class="span2">
-    Page size:
-		<select class="span4" onchange="window.location.href=this.options[this.selectedIndex].value">
+    	<select class="span10 pull-right" onchange="window.location.href=this.options[this.selectedIndex].value">
 			@Seq(5, 10, 20).map { size =>
-				<option value="@page.sizeLink(size)" @if(page.size==size){selected}>@size</option>
+				<option value="@page.sizeLink(size)" @if(page.size==size){selected}>@size per page</option>
 			}
 		</select>
     </div>
@@ -37,7 +38,7 @@
                <th class="col3 header @page.sortClass(3)">
     		     <a href="@page.sortLink(3)">Key</a>
 			   </th>
-               <th class="col4 header">
+               <th class="col4">
                  Description
                </th>
                <th class="col5 header @page.sortClass(4)">
@@ -61,13 +62,18 @@
         </table>
 
         <div class="pagination pagination-centered">
-            <ul>
+        	<ul class="pull-left">
+                <li>
+                    <a>Displaying @page.from to @page.to of @page.total</a>
+                </li>
+        	</ul>
+            <ul class="pull-right">
                 @if(page.hasPrev){
                     <li class="previous">
-                        <a href="@page.firstLink">«</a>
+                        <a href="@page.firstLink" title="First">«</a>
                     </li> 
                     <li class="previous">
-                        <a href="@page.prevLink">‹</a>
+                        <a href="@page.prevLink" title="Previous">‹</a>
                     </li> 
                 } else {
                     <li class="previous disabled">
@@ -77,15 +83,17 @@
                         <a>‹</a>
                     </li>
                 }
-                <li class="current">
-                    <a>Displaying @page.from to @page.to of @page.total</a>
-                </li>
+                @page.bound().map { p =>
+                	<li class="@if(page.number==p){active}else{current}">
+                        <a href="@page.pageLink(p)" title="Go to page @{p+1}">@{p+1}</a>
+                    </li> 
+                }
                 @if(page.hasNext){
                     <li class="next">
-                        <a href="@page.nextLink">›</a>
+                        <a href="@page.nextLink" title="Next">›</a>
                     </li> 
                     <li class="next">
-                        <a href="@page.lastLink">»</a>
+                        <a href="@page.lastLink" title="Last">»</a>
                     </li> 
                 } else {
                     <li class="next disabled">
