@@ -67,6 +67,7 @@
                     <a>Displaying @page.from to @page.to of @page.total</a>
                 </li>
         	</ul>
+        	@if(page.last!=page.first){
             <ul class="pull-right">
                 @if(page.hasPrev){
                     <li class="previous">
@@ -104,6 +105,7 @@
                     </li>
                 }
             </ul>
+            }
         </div>
         
     } else {

@@ -37,17 +37,17 @@ class Page[P <:Pageable, C](val criteria: P, val content: Seq[C], val total: Lon
   def from = offset+1
   def to = offset+content.length
   
-  def hasPrev = prev >= 0
+  def first = 0
+  def last = (total/size-(if(total%size==0) 1 else 0)).toInt
+  def firstLink = pageLink(first)
+  def lastLink = pageLink(last)
+  
+  def hasPrev = prev >= first
   def hasNext = total > to
   def prev = number - 1
   def next = number + 1
   def prevLink = pageLink(prev)
   def nextLink = pageLink(next)
-  
-  def first = 0
-  def last = (total/size-(if(total%size==0) 1 else 0)).toInt
-  def firstLink = pageLink(first)
-  def lastLink = pageLink(last)
   
   def bound(range: Int = 5) = {
     val low = number - range
