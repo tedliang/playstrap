@@ -4,10 +4,10 @@ class Pageable(val pageNum: Int, val pageSize: Int, val order: Int) {
   def offset = pageSize*pageNum
 }
 
-class Searchable(pageNum: Int, pageSize: Int, order: Int, val filter: String) 
+class Searchable(val filter: String, pageNum: Int, pageSize: Int, order: Int) 
 	extends Pageable(pageNum, pageSize, order) 
 
-class Page[C, P <:Pageable](val criteria: P, val content: Seq[C], val total: Long) {
+class Page[P <:Pageable, C](val criteria: P, val content: Seq[C], val total: Long) {
 
   var link = (newPageNum: Int, newPageSize: Int, newOrder: Int) => ""
 

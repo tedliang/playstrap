@@ -1,4 +1,4 @@
-@(page: models.Page[(org.activiti.engine.repository.ProcessDefinition, org.activiti.engine.repository.Deployment), models.Searchable])
+@(page: models.Page[models.Searchable, (org.activiti.engine.repository.ProcessDefinition, org.activiti.engine.repository.Deployment)])
 
 @main("workflow list") {
     
@@ -16,10 +16,10 @@
     <div class="span2">
     Page size:
 		<select class="span4" onchange="window.location.href=this.options[this.selectedIndex].value">
-			<option value="@page.sizeLink(5)" @if(page.size==5){selected}>5</option>
-			<option value="@page.sizeLink(10)" @if(page.size==10){selected}>10</option>
-			<option value="@page.sizeLink(20)" @if(page.size==20){selected}>20</option>
-		</select>    
+			@Seq(5, 10, 20).map { size =>
+				<option value="@page.sizeLink(size)" @if(page.size==size){selected}>@size</option>
+			}
+		</select>
     </div>
     </div>
     

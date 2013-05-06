@@ -26,7 +26,7 @@ object Activiti {
   def formService = engine.getFormService
   
   def processList(criteria: Searchable) = {
-    val proDefquery = repositoryService.createProcessDefinitionQuery().processDefinitionNameLike(s"%${criteria.filter}%");
+    val proDefquery = repositoryService.createProcessDefinitionQuery().processDefinitionNameLike(s"%${criteria.filter}%")
 
     scala.math.abs(criteria.order) match {
       case 2 => proDefquery.orderByProcessDefinitionName()

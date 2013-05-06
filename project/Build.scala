@@ -19,7 +19,7 @@ object ApplicationBuild extends Build {
     "org.activiti" % "activiti-engine" % "5.12.1",
     "org.webjars" % "webjars-play" % "2.1.0-1",
     "org.webjars" % "bootstrap" % "2.3.1",
-    "org.webjars" % "dojo" % "1.8.1",
+    "org.webjars" % "dojo" % "1.8.3",
     "org.webjars" % "dojo-bootstrap" % "1.3"
   )
 

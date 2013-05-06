@@ -10,4 +10,4 @@ GET     /assets/*file               controllers.Assets.at(path="/public", file)
 GET     /webjars/*file              controllers.WebJarAssets.at(file)
 
 # workflow list (look at the default values for pagination parameters)
-GET      /workflow                  controllers.Workflow.list(p:Int ?= 0, z:Int ?= 10, s:Int ?= 2, f ?= "")
+GET      /workflow                  controllers.Workflow.list(f:String ?= "", p:Int ?= 0, z:Int ?= 10, s:Int ?= 2)
