@@ -4,7 +4,7 @@ import controllers.routes
 
 object asset {
 
-  val dojo = WebJarAsset("dojo", "1.8.1")
+  val dojo = WebJarAsset("dojo", "1.8.3")
   val bootstrap = WebJarAsset("bootstrap", "2.3.1")
   val dojostrap = WebJarAsset("dojo-bootstrap", "1.3")
 
