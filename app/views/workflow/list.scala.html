@@ -7,12 +7,13 @@
 	<div class="row-fluid">
     <div class="span10">
         
-        @helper.form(action=routes.Workflow.list()) {
+        <form>
       	  <div class="input-append">
 		    <input type="text" class="span10" name="f" value="@page.criteria.filter">
 		    <button type="submit" class="btn">Filter by name</button>
+		    @page.input("p")
 		  </div>
-        }
+        </form>
         
     </div>
     <div class="span2">
@@ -85,7 +86,7 @@
                     </li>
                 }
                 @page.bound().map { p =>
-                	<li class="@if(page.number==p){active}else{current}">
+                	<li class="@if(page.index==p){active}else{current}">
                         <a href="@page.pageLink(p)" title="Go to page @{p+1}">@{p+1}</a>
                     </li> 
                 }

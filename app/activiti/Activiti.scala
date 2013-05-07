@@ -5,7 +5,7 @@ import scala.collection.JavaConversions._
 import org.activiti.engine.repository.Deployment
 import org.activiti.engine.repository.ProcessDefinition
 import org.activiti.engine.repository.ProcessDefinitionQuery
-import models.{Searchable, Page}
+import models.{Page, Searchable}
 
 /**
  * Public Activiti API
@@ -28,17 +28,17 @@ object Activiti {
   def processList(criteria: Searchable) = {
     val proDefquery = repositoryService.createProcessDefinitionQuery().processDefinitionNameLike(s"%${criteria.filter}%")
 
-    scala.math.abs(criteria.order) match {
+    scala.math.abs(criteria.sort) match {
       case 2 => proDefquery.orderByProcessDefinitionName()
       case 3 => proDefquery.orderByProcessDefinitionKey()
       case 4 => proDefquery.orderByDeploymentId()
       case _ => proDefquery.orderByProcessDefinitionId()
     }
-    if(criteria.order<0) proDefquery.desc() else proDefquery.asc()
+    if(criteria.sort<0) proDefquery.desc() else proDefquery.asc()
     
     val deployQuery = repositoryService.createDeploymentQuery
     
-    new Page(criteria, for(proDef <- proDefquery.listPage(criteria.offset, criteria.pageSize)) 
+    new Page(criteria, for(proDef <- proDefquery.listPage(criteria.offset, criteria.size)) 
       yield(proDef, deployQuery.deploymentId(proDef.getDeploymentId).singleResult()), 
       proDefquery.count)
   } 

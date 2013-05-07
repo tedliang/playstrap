@@ -1,38 +1,78 @@
 package models
 
-class Pageable(val pageNum: Int, val pageSize: Int, val order: Int) {
-  def offset = pageSize*pageNum
+import play.api.mvc.QueryStringBindable
+
+class Searchable(f: String, p: Pageable) extends Pageable(p) {
+  val filter = f
 }
 
-class Searchable(val filter: String, pageNum: Int, pageSize: Int, order: Int) 
-	extends Pageable(pageNum, pageSize, order) 
+class Pageable(val index: Int, val size: Int, val sort: Int) {
+  def this(p: Pageable) = this(p.index, p.size, p.sort)
+  def offset = size*index
+  def unapply = (index, size, sort)
+}
+
+object Pageable {
+  def apply(index: Int, size: Int, sort: Int) = 
+    new Pageable(index, size, sort)
+
+  implicit def queryStringBinder(implicit intBinder: QueryStringBindable[Int]) = 
+    new PageableBinder(intBinder)
+  
+  object key extends Enumeration {
+    val index = Value("i")
+    val size = Value("s")
+    val sort = Value("o")
+  } 
+  
+}
+
+class PageableBinder(intBinder: QueryStringBindable[Int]) extends QueryStringBindable[Pageable] {
+  override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, Pageable]] = {
+    for {
+      index <- intBinder.bind(s"$key.${Pageable.key.index}", params)
+      size <- intBinder.bind(s"$key.${Pageable.key.size}", params)
+      sort <- intBinder.bind(s"$key.${Pageable.key.sort}", params)
+    } yield (index, size, sort) match {
+      case (Right(index), Right(size), Right(sort)) => Right(Pageable(index, size, sort))
+      case _ => Left("Unable to bind a Pageable")
+    }
+  }
+  override def unbind(key: String, p: Pageable): String = {
+    intBinder.unbind(s"$key.${Pageable.key.index}", p.index) + "&" + 
+    intBinder.unbind(s"$key.${Pageable.key.size}", p.size)+ "&" + 
+    intBinder.unbind(s"$key.${Pageable.key.sort}", p.sort)
+  }
+}
 
 class Page[P <:Pageable, C](val criteria: P, val content: Seq[C], val total: Long) {
 
-  var link = (newPageNum: Int, newPageSize: Int, newOrder: Int) => ""
+  var _link = (pageable: Pageable) => ""
 
-  def withLink(newLink: (Int, Int, Int) => String) = {
-      link = newLink
+  def withLink(newLink: (Pageable) => String) = {
+      _link = newLink
       this
     }
-      
-  def pageLink(newPage: Int) = link(newPage, criteria.pageSize, criteria.order)
-  def sizeLink(newPageSize: Int) = link(0, newPageSize, criteria.order)
+
+  def link(index: Int = 0, size: Int = criteria.size, sort: Int = criteria.sort) = 
+    _link(Pageable(index, size, sort))
   
-  def sortLink(newOrderBy: Int) = link(0, criteria.pageSize, 
-      if(newOrderBy == scala.math.abs(criteria.order)) -criteria.order 
-      else newOrderBy)
+  def pageLink(newPage: Int) = link(index = newPage)
+  def sizeLink(newSize: Int) = link(size = newSize)
+  def sortLink(newSort: Int) = link(sort = 
+      if(newSort == scala.math.abs(criteria.sort)) -criteria.sort 
+      else newSort)
   
-  def sortClass(newOrderBy: Int, upClass: String = "headerSortUp", downClass: String = "headerSortDown") = 
-    if(scala.math.abs(criteria.order) == newOrderBy) 
-      if(criteria.order < 0) downClass else upClass
+  def sortClass(newSort: Int, upClass: String = "headerSortUp", downClass: String = "headerSortDown") = 
+    if(scala.math.abs(criteria.sort) == newSort) 
+      if(criteria.sort < 0) downClass else upClass
     else ""
 
   def hasContent = content.nonEmpty
   
   def offset = criteria.offset
-  def number = criteria.pageNum
-  def size = criteria.pageSize
+  def index = criteria.index
+  def size = criteria.size
   
   def from = offset+1
   def to = offset+content.length
@@ -44,14 +84,20 @@ class Page[P <:Pageable, C](val criteria: P, val content: Seq[C], val total: Lon
   
   def hasPrev = prev >= first
   def hasNext = total > to
-  def prev = number - 1
-  def next = number + 1
+  def prev = index - 1
+  def next = index + 1
   def prevLink = pageLink(prev)
   def nextLink = pageLink(next)
   
+  def input(key: String, index: Int = 0, size: Int = criteria.size, sort: Int = criteria.sort) = {
+    <input type="hidden" name={s"$key.${Pageable.key.index}"} value={s"$index"}/>
+    <input type="hidden" name={s"$key.${Pageable.key.size}"} value={s"$size"}/>
+    <input type="hidden" name={s"$key.${Pageable.key.sort}"} value={s"$sort"}/>
+  } 
+  
   def bound(range: Int = 5) = {
-    val low = number - range
-    val high = number + range
+    val low = index - range
+    val high = index + range
     val lenght = range * 2
     
     if(lenght > last) first to last
