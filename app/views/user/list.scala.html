@@ -1,0 +1,65 @@
+@(page: Page[Searchable, User])
+
+@main("user list") {
+    
+    <h1>@Messages("user.list.title")</h1>
+
+	<div class="row-fluid">
+    <div class="span10">
+        
+        <form>
+      	  <div class="input-append">
+		    <input type="text" class="span10" name="f" value="@page.criteria.filter">
+		    <button type="submit" class="btn">Filter by name</button>
+		    @page.input("p")
+		  </div>
+        </form>
+        
+    </div>
+    <div class="span2">
+    	<select class="span10 pull-right" onchange="window.location.href=this.options[this.selectedIndex].value">
+			@Seq(5, 10, 20).map { size =>
+				<option value="@page.sizeLink(size)" @if(page.size==size){selected}>@size per page</option>
+			}
+		</select>
+    </div>
+    </div>
+    
+    @if(page.hasContent){
+        
+        <table class="table table-striped table-hover table-bordered">
+           <thead>
+             <tr>
+               <th class="col1 header @page.sortClass(1)">
+    		     <a href="@page.sortLink(1)">ID</a>
+			   </th>
+               <th class="col2 header @page.sortClass(2)">
+    		     <a href="@page.sortLink(2)">Name</a>
+			   </th>
+               <th class="col3 header @page.sortClass(3)">
+    		     <a href="@page.sortLink(3)">Email</a>
+			   </th>
+             </tr>
+           </thead>
+           <tbody>
+             @page.content.map { u =>
+                 <tr>
+                   <td><a href="">@u.id</a></td>
+                   <td>@u.username</td>
+                   <td>@u.email</td>
+                 </tr>
+             }
+           </tbody>
+        </table>
+
+        @helper.paginator(page)
+        
+    } else {
+        
+        <div class="well">
+            <em>Nothing to display</em>
+        </div>
+        
+    }   
+
+}
