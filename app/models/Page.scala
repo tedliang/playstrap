@@ -2,13 +2,11 @@ package models
 
 import play.api.mvc.QueryStringBindable
 
-class Searchable(f: String, p: Pageable) extends Pageable(p) {
-  val filter = f
-}
+class Searchable(val filter: String, pageable: Pageable) extends Pageable(pageable)
 
 class Pageable(val index: Int, val size: Int, val sort: Int) {
   def this(p: Pageable) = this(p.index, p.size, p.sort)
-  def offset = size*index
+  def offset = index * size
   def unapply = (index, size, sort)
 }
 
@@ -24,7 +22,6 @@ object Pageable {
     val size = Value("s")
     val sort = Value("o")
   } 
-  
 }
 
 class PageableBinder(intBinder: QueryStringBindable[Int]) extends QueryStringBindable[Pageable] {
@@ -106,4 +103,14 @@ class Page[P <:Pageable, C](val criteria: P, val content: Seq[C], val total: Lon
     else low to high
   }
   
+  def pagination = Pagination(index, from, to, total, 
+      hasPrev, hasNext, first, last, prev, next, 
+      firstLink, lastLink, prevLink, nextLink,
+      pageLink _, bound _) 
+  
 }
+
+case class Pagination(index: Int, from: Int, to: Int, total: Long,
+    hasPrev: Boolean, hasNext: Boolean, first: Int, last: Int, prev: Int, next: Int,
+    firstLink: String, lastLink: String, prevLink: String, nextLink: String,
+    pageLink: Int => String, bound: Int => Range)

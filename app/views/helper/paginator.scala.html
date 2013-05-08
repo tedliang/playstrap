@@ -1,0 +1,47 @@
+@(page: Pagination)
+<div class="pagination pagination-centered">
+  <ul class="pull-left">
+    <li>
+      <a>Displaying @page.from to @page.to of @page.total</a>
+    </li>
+  </ul>
+  @if(page.last!=page.first){
+    <ul class="pull-right">
+        @if(page.hasPrev){
+            <li class="previous">
+                <a href="@page.firstLink" title="First">«</a>
+            </li> 
+            <li class="previous">
+                <a href="@page.prevLink" title="Previous">‹</a>
+            </li> 
+        } else {
+            <li class="previous disabled">
+                <a>«</a>
+            </li>
+            <li class="previous disabled">
+                <a>‹</a>
+            </li>
+        }
+        @page.bound(5).map { p =>
+        	<li class="@if(page.index==p){active}else{current}">
+                <a href="@page.pageLink(p)" title="Go to page @{p+1}">@{p+1}</a>
+            </li> 
+        }
+        @if(page.hasNext){
+            <li class="next">
+                <a href="@page.nextLink" title="Next">›</a>
+            </li> 
+            <li class="next">
+                <a href="@page.lastLink" title="Last">»</a>
+            </li> 
+        } else {
+            <li class="next disabled">
+                <a>›</a>
+            </li>
+            <li class="next disabled">
+                <a>»</a>
+            </li>
+        }
+    </ul>
+  }
+</div>
