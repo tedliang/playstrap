@@ -42,8 +42,15 @@ class PageableBinder(intBinder: QueryStringBindable[Int]) extends QueryStringBin
   }
 }
 
-class Page[P <:Pageable, C](val criteria: P, val content: Seq[C], val total: Long) {
+class Page[P <:Pageable, C](val criteria: P, val content: Seq[C], val total: Long) extends Pagination {
 
+  def index = criteria.index
+  def size = criteria.size
+  def offset = criteria.offset
+  
+  def count = content.length
+  def hasContent = content.nonEmpty
+  
   var _link = (pageable: Pageable) => ""
 
   def withLink(newLink: (Pageable) => String) = {
@@ -51,28 +58,45 @@ class Page[P <:Pageable, C](val criteria: P, val content: Seq[C], val total: Lon
       this
     }
 
-  def link(index: Int = 0, size: Int = criteria.size, sort: Int = criteria.sort) = 
+  def link(index: Int = 0, size: Int = criteria.size, sort: Int = criteria.sort): String = 
     _link(Pageable(index, size, sort))
   
-  def pageLink(newPage: Int) = link(index = newPage)
-  def sizeLink(newSize: Int) = link(size = newSize)
-  def sortLink(newSort: Int) = link(sort = 
+  def pageLink(newPage: Int): String = link(index = newPage)
+  def sizeLink(newSize: Int): String = link(size = newSize)
+  def sortLink(newSort: Int): String = link(sort = 
       if(newSort == scala.math.abs(criteria.sort)) -criteria.sort 
       else newSort)
   
-  def sortClass(newSort: Int, upClass: String = "headerSortUp", downClass: String = "headerSortDown") = 
+  def sortClass(newSort: Int, 
+      upClass: String = "headerSortUp", 
+      downClass: String = "headerSortDown"): String = 
     if(scala.math.abs(criteria.sort) == newSort) 
       if(criteria.sort < 0) downClass else upClass
     else ""
 
-  def hasContent = content.nonEmpty
+  def input(key: String, index: Int = 0, size: Int = criteria.size, sort: Int = criteria.sort) = {
+    <input type="hidden" name={s"$key.${Pageable.key.index}"} value={s"$index"}/>
+    <input type="hidden" name={s"$key.${Pageable.key.size}"} value={s"$size"}/>
+    <input type="hidden" name={s"$key.${Pageable.key.sort}"} value={s"$sort"}/>
+  }
+
+}
+
+trait Pagination {
   
-  def offset = criteria.offset
-  def index = criteria.index
-  def size = criteria.size
+  def index: Int
+  def size: Int
+  def offset: Int
+	
+  def count: Int
+  def total: Long
   
-  def from = offset+1
-  def to = offset+content.length
+  def pageLink(newPage: Int): String
+  def sizeLink(newSize: Int): String
+  def sortLink(newSort: Int): String
+
+  def from = offset + 1
+  def to = offset + count
   
   def first = 0
   def last = (total/size-(if(total%size==0) 1 else 0)).toInt
@@ -86,12 +110,6 @@ class Page[P <:Pageable, C](val criteria: P, val content: Seq[C], val total: Lon
   def prevLink = pageLink(prev)
   def nextLink = pageLink(next)
   
-  def input(key: String, index: Int = 0, size: Int = criteria.size, sort: Int = criteria.sort) = {
-    <input type="hidden" name={s"$key.${Pageable.key.index}"} value={s"$index"}/>
-    <input type="hidden" name={s"$key.${Pageable.key.size}"} value={s"$size"}/>
-    <input type="hidden" name={s"$key.${Pageable.key.sort}"} value={s"$sort"}/>
-  } 
-  
   def bound(range: Int = 5) = {
     val low = index - range
     val high = index + range
@@ -103,14 +121,4 @@ class Page[P <:Pageable, C](val criteria: P, val content: Seq[C], val total: Lon
     else low to high
   }
   
-  def pagination = Pagination(index, from, to, total, 
-      hasPrev, hasNext, first, last, prev, next, 
-      firstLink, lastLink, prevLink, nextLink,
-      pageLink _, bound _) 
-  
 }
-
-case class Pagination(index: Int, from: Int, to: Int, total: Long,
-    hasPrev: Boolean, hasNext: Boolean, first: Int, last: Int, prev: Int, next: Int,
-    firstLink: String, lastLink: String, prevLink: String, nextLink: String,
-    pageLink: Int => String, bound: Int => Range)
