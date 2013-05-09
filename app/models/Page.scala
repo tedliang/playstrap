@@ -48,7 +48,8 @@ class Page[P <:Pageable, C](val criteria: P, val content: Seq[C], val total: Lon
   def size = criteria.size
   def offset = criteria.offset
   
-  def count = content.length
+  def from = offset + 1
+  def to = offset + content.length
   def hasContent = content.nonEmpty
   
   var _link = (pageable: Pageable) => ""
@@ -88,16 +89,14 @@ trait Pagination {
   def size: Int
   def offset: Int
 	
-  def count: Int
   def total: Long
+  def from: Int
+  def to: Int
   
   def pageLink(newPage: Int): String
   def sizeLink(newSize: Int): String
   def sortLink(newSort: Int): String
 
-  def from = offset + 1
-  def to = offset + count
-  
   def first = 0
   def last = (total/size-(if(total%size==0) 1 else 0)).toInt
   def firstLink = pageLink(first)
