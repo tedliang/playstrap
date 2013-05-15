@@ -14,4 +14,10 @@ object User extends Controller {
 	)))
   }
   
+  def view(id: Long) = Action {
+    Users.findById(id).map { model => 
+      Ok(user.view(model))
+    } getOrElse NotFound
+  }
+
 }
