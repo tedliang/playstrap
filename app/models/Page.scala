@@ -42,18 +42,18 @@ class PageableBinder(intBinder: QueryStringBindable[Int]) extends QueryStringBin
   }
 }
 
-class Page[P <:Pageable, C](val criteria: P, val content: Seq[C], val total: Long) extends Pagination {
+class Page[P <:Pageable, C](val criteria: P, val entries: Iterable[C], val total: Long) extends Pagination {
 
   def index = criteria.index
   def size = criteria.size
   
-  def from = criteria.offset + 1
-  def to = criteria.offset + content.length
-  def hasContent = content.nonEmpty
+  def entryFrom = criteria.offset + 1
+  def entryTo = criteria.offset + entries.size
+  def hasEntries = entries.nonEmpty
   
   var _link = (pageable: Pageable) => ""
 
-  def withLink(newLink: (Pageable) => String) = {
+  def withLink(newLink: (Pageable) => String): this.type = {
       _link = newLink
       this
     }
@@ -88,8 +88,8 @@ trait Pagination {
   def size: Int
 	
   def total: Long
-  def from: Int
-  def to: Int
+  def entryFrom: Int
+  def entryTo: Int
   
   def pageLink(newPage: Int): String
   def sizeLink(newSize: Int): String
@@ -101,7 +101,7 @@ trait Pagination {
   def lastLink = pageLink(last)
   
   def hasPrev = prev >= first
-  def hasNext = total > to
+  def hasNext = total > entryTo
   def prev = index - 1
   def next = index + 1
   def prevLink = pageLink(prev)

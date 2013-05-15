@@ -25,7 +25,7 @@
     </div>
     </div>
     
-    @if(page.hasContent){
+    @if(page.hasEntries){
         
         <table class="table table-striped table-hover table-bordered">
            <thead>
@@ -48,7 +48,7 @@
              </tr>
            </thead>
            <tbody>
-             @page.content.map { 
+             @page.entries.map { 
                case (proDef, deploy) => {
                  <tr>
                    <td><a href="">@proDef.getId</a></td>
