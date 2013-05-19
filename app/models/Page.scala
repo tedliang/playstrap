@@ -8,7 +8,6 @@ class Searchable(val filter: String, pageable: Pageable) extends Pageable(pageab
 class Pageable(val index: Int, val size: Int, val sort: Int) {
   def this(p: Pageable) = this(p.index, p.size, p.sort)
   def offset = index * size
-  def unapply = (index, size, sort)
   
   def canEqual(other: Any) = other.isInstanceOf[Pageable]
   

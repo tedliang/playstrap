@@ -16,7 +16,7 @@ object Users extends IdTable[User]("User") {
   
   def list(criteria: Searchable) = DB.withSession { implicit session => 
     new Page(criteria, 
-        Query(this)
+      Query(this)
         .filter(_.username.toUpperCase like s"%${criteria.filter.toUpperCase}%")
         .sortBy(u => criteria.sort match {
           case 1 => u.id.asc
@@ -29,7 +29,7 @@ object Users extends IdTable[User]("User") {
         .drop(criteria.offset)
         .take(criteria.size)
         .list,
-        Query(this.length).first)
+      Query(this.length).first)
   }
   
 }

@@ -26,7 +26,8 @@ object Activiti {
   def formService = engine.getFormService
   
   def processList(criteria: Searchable) = {
-    val proDefquery = repositoryService.createProcessDefinitionQuery().processDefinitionNameLike(s"%${criteria.filter}%")
+    val proDefquery = repositoryService.createProcessDefinitionQuery()
+    		.processDefinitionNameLike(s"%${criteria.filter}%")
 
     scala.math.abs(criteria.sort) match {
       case 2 => proDefquery.orderByProcessDefinitionName()
@@ -38,7 +39,8 @@ object Activiti {
     
     val deployQuery = repositoryService.createDeploymentQuery
     
-    new Page(criteria, for(proDef <- proDefquery.listPage(criteria.offset, criteria.size)) 
+    new Page(criteria, 
+      for(proDef <- proDefquery.listPage(criteria.offset, criteria.size)) 
       yield(proDef, deployQuery.deploymentId(proDef.getDeploymentId).singleResult()), 
       proDefquery.count)
   } 
