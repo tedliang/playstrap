@@ -5,7 +5,7 @@ import play.api.Play.current
 import play.api.db.slick.DB
 import play.api.db.slick.Config.driver.simple._
 
-case class Role(id: Option[Long], name: String, description: Option[String]){
+case class Role(id: Option[Long], name: String, description: Option[String]) extends IdEntity {
   def users = UserRole.left(id)
 }
 

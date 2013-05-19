@@ -1,21 +1,28 @@
-@(user: User)
-@import helper.twitterBootstrap._
+@(user: User)(implicit flash: play.api.mvc.Flash)
 
 @main("View user") {
 
-<h1>View User</h1>
+	<ul class="breadcrumb">
+	  <li><a href="@routes.User.list()">User Browse</a> 
+	  <span class="divider">/</span></li>
+	  <li class="active">User View</li>
+	</ul>
 
-<dl class="dl-horizontal">
-    <dt>Name</dt>
-    <dd>@user.username</dd>
-    <dt>Email</dt>
-    <dd>@user.email</dd>
-</dl>
+    @flash.get("success").map { message =>
+        <div class="alert alert-success">
+            <strong>Done!</strong> @message
+        </div>
+    }
 
-<div class="form-actions">
-    <a href="routes.User.edit(release.id.getOrElse(0))" class="btn btn-primary">Edit</a>
-    <a href="@routes.User.list()" class="btn">Cancel</a>
-    <a href="routes.User.create()" class="btn">New</a>
-</div>
+	<dl class="dl-horizontal">
+	    <dt>Name</dt>
+	    <dd>@user.username</dd>
+	    <dt>Email</dt>
+	    <dd>@user.email</dd>
+	</dl>
+
+	<div class="form-actions">
+	    <a href="@routes.User.edit(user.id.get)" class="btn btn-primary">Edit</a>
+	</div>
 
 }

@@ -1,6 +1,7 @@
 package models
 
 import play.api.mvc.QueryStringBindable
+import scala.util.hashing.MurmurHash3
 
 class Searchable(val filter: String, pageable: Pageable) extends Pageable(pageable)
 
@@ -8,6 +9,18 @@ class Pageable(val index: Int, val size: Int, val sort: Int) {
   def this(p: Pageable) = this(p.index, p.size, p.sort)
   def offset = index * size
   def unapply = (index, size, sort)
+  
+  def canEqual(other: Any) = other.isInstanceOf[Pageable]
+  
+  override def equals(other: Any) = other match {
+    case that: Pageable => that.canEqual(this) && index == that.index && size == that.size && sort == that.sort
+    case _ => false
+  }
+  
+  override def hashCode() = MurmurHash3.seqHash(List(index, size, sort))
+  
+  override def toString = s"Pageable($index, $size, $sort)"
+  
 }
 
 object Pageable {

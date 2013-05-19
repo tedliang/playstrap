@@ -4,7 +4,11 @@ import play.api.Play.current
 import play.api.db.slick.Config.driver.simple._
 import play.api.db.slick.DB
 
-abstract class IdTable[T](_schemaName: Option[String], _tableName: String) extends Table[T](_schemaName, _tableName) {
+abstract class IdEntity {
+  def id: Option[Long]
+}
+
+abstract class IdTable[T <: IdEntity](_schemaName: Option[String], _tableName: String) extends Table[T](_schemaName, _tableName) {
   def this(_tableName: String) = this(None, _tableName)
   def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
   def autoInc = * returning id
@@ -13,6 +17,7 @@ abstract class IdTable[T](_schemaName: Option[String], _tableName: String) exten
   def findById(id: Long): Option[T] = DB.withSession { implicit session =>
     byId(id).firstOption
   }
+  
   def insert(t: T) = DB.withSession { implicit session => 
     autoInc insert t
   }
@@ -28,9 +33,14 @@ abstract class IdTable[T](_schemaName: Option[String], _tableName: String) exten
   def findAll = DB.withSession { implicit session => 
     Query(this).list
   }
+  
+  def update(entity: T) = DB.withSession { implicit session =>
+    this.where(_.id === entity.id).update(entity)
+  }
+  
 }
 
-abstract class ManyToManyTable[L, R](_schemaName: Option[String], _tableName: String, 
+abstract class ManyToManyTable[L <: IdEntity, R <: IdEntity](_schemaName: Option[String], _tableName: String, 
     Left: IdTable[L], Right: IdTable[R]) extends Table[(Long,Long)](_schemaName, _tableName) {
   
   def this(_tableName: String, Left: IdTable[L], Right: IdTable[R]) = this(None, _tableName, Left, Right)

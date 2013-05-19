@@ -10,7 +10,8 @@ import models.{Pageable, Searchable}
 object Workflow extends Controller {
 
   def list(filter: String, p: Pageable) = Action {
-	Ok(workflow.list(Activiti.processList(new Searchable(filter, p)).withLink(
+	Ok(workflow.list(Activiti.processList(new Searchable(
+	  filter, p)).withLink(
 	    routes.Workflow.list(filter, _).url
 	)))
   }
