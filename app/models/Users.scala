@@ -13,6 +13,9 @@ object Users extends IdTable[User]("User") {
   def password = column[String]("password")
   def email = column[String]("email")
   def * = id.? ~ username ~ password ~ email <> (User.apply _, User.unapply _)
+  override def forInsert = username ~ password ~ email <> (
+      (n, p, e) => User(None, n, p, e), 
+      (u: User) => Some((u.username, u.password, u.email)))
   
   def list(criteria: Searchable) = DB.withSession { implicit session => 
     new Page(criteria, 

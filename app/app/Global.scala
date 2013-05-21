@@ -56,15 +56,15 @@ object Global extends GlobalSettings {
 
     if (Roles.count == 0) {
       Roles.insertAll(
-        Role(Some(1L), "Admin", Option("admin")),
-        Role(Some(2L), "User", Option("user")))
+        Role(None, "Admin", Option("admin")),
+        Role(None, "User", Option("user")))
     }
 
     if (Users.count == 0) {
       Users.insertAll(
-        User(Some(1L), "Acme", "123", "a@a.com"),
-        User(Some(2L), "Superior", "321", "b@b.com"),
-        User(Some(3L), "Ground", "111", "c@c.com"))
+        User(None, "Acme", "123", "a@a.com"),
+        User(None, "Superior", "321", "b@b.com"),
+        User(None, "Ground", "111", "c@c.com"))
     }
 
     if (UserRole.count == 0) {

@@ -1,0 +1,31 @@
+@(f: Form[User])(implicit flash: play.api.mvc.Flash)
+@import helper._
+@implicitFieldConstructor = @{ FieldConstructor(twitterBootstrapInput.f) }
+
+@main("Edit User") {
+
+	<ul class="breadcrumb">
+	  <li><a href="@routes.User.list()">User Browse</a> 
+	  <span class="divider">/</span></li>
+	  <li class="active">User Create</li>
+	</ul>
+
+    @flash.get("success").map { message =>
+        <div class="alert alert-success">
+            <strong>Done!</strong> @message
+        </div>
+    }
+
+    @form(routes.User.save(), 'class -> "form-horizontal") {
+    
+	    @inputText(f("username"),  '_label -> "Username")
+	    @inputText(f("password"), '_label -> "Password")
+	    @inputText(f("email"), '_label -> "Email")
+        
+        <div class="form-actions">
+            <input type="submit" value="Save" class="btn btn-primary"> 
+        </div>
+
+    }
+
+}

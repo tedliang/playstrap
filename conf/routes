@@ -14,6 +14,8 @@ GET      /workflow                  controllers.Workflow.list(f:String ?= "", p:
 
 # user list
 GET      /user                  	controllers.User.list(f:String ?= "", p:models.Pageable ?= models.Pageable(0,10,2))
+GET      /user/create             	controllers.User.create
+POST	 /user/create            	controllers.User.save
 GET      /user/:id                  controllers.User.view(id: Long)
 GET      /user/:id/edit             controllers.User.edit(id: Long)
 POST	 /user            			controllers.User.update(id: Long)

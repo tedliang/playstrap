@@ -4,7 +4,7 @@ import play.api._
 import play.api.data.Forms._
 import play.api.mvc._
 import play.api.Play.current
-import views.html._
+import views.html.user
 import models.{Users, Pageable, Searchable}
 import play.api.data.Form
 
@@ -30,6 +30,19 @@ object User extends Controller {
     } getOrElse NotFound
   }
 
+  def create = Action { implicit request =>
+    Ok(user.create(form))
+  }
+  
+  def save = Action { implicit request =>
+    form.bindFromRequest.fold(
+      formWithErrors => BadRequest(user.create(formWithErrors)),
+      model => 
+        Redirect(routes.User.view(Users.insert(model))).flashing(
+        "success" -> s"User ${model.username} has been created.")
+    )
+  }
+  
   def edit(id: Long) = Action { implicit request =>
     Users.findById(id).map { model => 
       Ok(user.edit(id, form.fill(model)))
@@ -39,11 +52,11 @@ object User extends Controller {
   def update(id: Long) = Action { implicit request =>
     form.bindFromRequest.fold(
       formWithErrors => BadRequest(user.edit(id, formWithErrors)),
-      entity => Users.update(entity) match {
+      model => Users.update(model) match {
           case 0 => Redirect(routes.User.edit(id)).flashing(
-              "failure" -> s"Could not update user ${entity.username}.")
+              "failure" -> s"Could not update user ${model.username}.")
           case _ => Redirect(routes.User.view(id)).flashing(
-              "success" -> s"User ${entity.username} has been updated.")
+              "success" -> s"User ${model.username} has been updated.")
       }
     )
   }

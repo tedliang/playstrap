@@ -11,7 +11,8 @@ abstract class IdEntity {
 abstract class IdTable[T <: IdEntity](_schemaName: Option[String], _tableName: String) extends Table[T](_schemaName, _tableName) {
   def this(_tableName: String) = this(None, _tableName)
   def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
-  def autoInc = * returning id
+  def forInsert = *
+  def autoInc = forInsert returning id
   def byId = createFinderBy(_.id)
   
   def findById(id: Long): Option[T] = DB.withSession { implicit session =>
