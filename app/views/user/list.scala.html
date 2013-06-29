@@ -48,7 +48,7 @@
            <tbody>
              @page.entries.map { u =>
                  <tr>
-                   <td><a href="@routes.User.view(u.id.getOrElse(0))">@u.id</a></td>
+                   <td><a href="@routes.User.view(u.id.get)">@u.id</a></td>
                    <td>@u.username</td>
                    <td>@u.email</td>
                  </tr>

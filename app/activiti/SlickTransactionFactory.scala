@@ -24,7 +24,7 @@ class SlickTransactionFactory extends TransactionFactory {
   }
 
   override def newTransaction(dataSource: DataSource, level: TransactionIsolationLevel, autoCommit: Boolean) = {
-    new JdbcTransaction(dataSource, level, true)
+    new JdbcTransaction(dataSource, level, autoCommit)
   }
 
 }
